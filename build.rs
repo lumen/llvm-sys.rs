@@ -247,8 +247,13 @@ fn get_system_libraries() -> Vec<String> {
                 &flag[..flag.len() - 4]
             } else {
                 // Linker flags style, -lfoo
-                assert!(flag.starts_with("-l"));
-                &flag[2..]
+                if flag.starts_with("-l") {
+                    &flag[2..]
+                } else {
+                    // Otherwise we expect a path to a dylib
+                    assert!(flag.starts_with('/'));
+                    flag
+                }
             }
         })
         .chain(get_system_libcpp())
